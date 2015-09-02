@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var request = require('request');
 var bodyParser = require('body-parser')
-app.use( bodyParser.json() ); 
+app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
@@ -11,14 +11,12 @@ var techrefemail = 'techreformation.slack.com';
 var techreftoken = 'xoxp-6901139172-6902652471-10022340690-436360'
 app.listen(process.env.PORT || 5000);
 app.post('/techrefinvite', function (req, res) {
-  if(req.body.email != undefined)
-  {
+  if (req.body.email != undefined) {
     InviteToSlack(techrefemail, req.body.email, techreftoken);
-    res.send("success");  
+    res.send("success");
   }
-  else
-  {
-  res.send("Failed");
+  else {
+    res.send("Failed");
   }
 });
 
@@ -26,16 +24,16 @@ function InviteToSlack(url, email, token) {
 
   var options = {
     proxy: process.env.https_proxy,
-    url:   'https://' + url + '/api/users.admin.invite?email=' + email + '&channels=C06SGVBV5&first_name=Ryan&last_name=Tankersley&token=' + token + '&set_active=true&_attempts=1',
-      method: 'POST',
+    url: 'https://' + url + '/api/users.admin.invite?email=' + email + '&channels=C06SGVBV5&first_name=Ryan&last_name=Tankersley&token=' + token + '&set_active=true&_attempts=1',
+    method: 'POST',
   };
-  var req = request.post(options, function(err, res, body) {
-  console.log('STATUS: ' + res.statusCode);
-  console.log('HEADERS: ' + JSON.stringify(res.headers));
-  res.setEncoding('utf8');
-  console.log('BODY: ' + body);
-  res.on('data', function (chunk) {
-    console.log('BODY: ' + chunk);
+  var req = request.post(options, function (err, res, body) {
+    console.log('STATUS: ' + res.statusCode);
+    console.log('HEADERS: ' + JSON.stringify(res.headers));
+    res.setEncoding('utf8');
+    console.log('BODY: ' + body);
+    res.on('data', function (chunk) {
+      console.log('BODY: ' + chunk);
+    });
   });
-});
 }
