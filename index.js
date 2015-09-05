@@ -11,11 +11,13 @@ var techrefemail = 'techreformation.slack.com';
 var techreftoken = 'xoxp-6901139172-6902652471-10022340690-436360'
 app.listen(process.env.PORT || 5000);
 app.post('/techrefinvite', function (req, res) {
-  console.log("rawr");
-  var host = req.get('host');
-  console.log(host);
-  res.header('Access-Control-Allow-Origin', 'http://www.tankstudios.net');
+  var origin = req.get('Origin');
+  if(origin.indexOf("tank") > -1 || origin.indexOf("techreformation") > -1)
+  {
+    res.header('Access-Control-Allow-Origin', 'http://www.tankstudios.net');
     InviteToSlack(techrefemail, req.body.email, techreftoken, res);
+  }
+  res.send("{ok:false}");
 });
 
 function InviteToSlack(url, email, token, originalRes) {
