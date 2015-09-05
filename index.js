@@ -14,7 +14,7 @@ app.post('/techrefinvite', function (req, res) {
   var origin = req.get('Origin');
   if(origin.indexOf("tank") > -1 || origin.indexOf("techreformation") > -1)
   {
-    res.header('Access-Control-Allow-Origin', 'http://www.tankstudios.net');
+    res.header('Access-Control-Allow-Origin', origin);
     InviteToSlack(techrefemail, req.body.email, techreftoken, res);
   }
   res.send("{ok:false}");
@@ -28,13 +28,13 @@ function InviteToSlack(url, email, token, originalRes) {
     method: 'POST',
   };
   request.post(options, function (err, res, body) {
-    console.log('STATUS: ' + res.statusCode);
-    console.log('HEADERS: ' + JSON.stringify(res.headers));
+    // console.log('STATUS: ' + res.statusCode);
+    // console.log('HEADERS: ' + JSON.stringify(res.headers));
     res.setEncoding('utf8');
-    console.log('BODY: ' + body);
+    // console.log('BODY: ' + body);
       originalRes.send(body);
-    res.on('data', function (chunk) {
-      console.log(chunk);
-    });
+    // res.on('data', function (chunk) {
+    //   console.log(chunk);
+    // });
   });
 }
