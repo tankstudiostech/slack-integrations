@@ -11,29 +11,28 @@ var techrefemail = 'techreformation.slack.com';
 var techreftoken = 'xoxp-6901139172-6902652471-10022340690-436360'
 app.listen(process.env.PORT || 5000);
 app.post('/techrefinvite', function (req, res) {
-  if (req.body.email != undefined) {
-    InviteToSlack(techrefemail, req.body.email, techreftoken);
-    res.send("success");
-  }
-  else {
-    res.send("Failed");
-  }
+  console.log("rawr");
+  var host = req.get('host');
+  console.log(host);
+  res.header('Access-Control-Allow-Origin', 'http://www.tankstudios.net');
+    InviteToSlack(techrefemail, req.body.email, techreftoken, res);
 });
 
-function InviteToSlack(url, email, token) {
+function InviteToSlack(url, email, token, originalRes) {
 
   var options = {
     proxy: process.env.https_proxy,
     url: 'https://' + url + '/api/users.admin.invite?email=' + email + '&channels=C06SGVBV5&first_name=Ryan&last_name=Tankersley&token=' + token + '&set_active=true&_attempts=1',
     method: 'POST',
   };
-  var req = request.post(options, function (err, res, body) {
+  request.post(options, function (err, res, body) {
     console.log('STATUS: ' + res.statusCode);
     console.log('HEADERS: ' + JSON.stringify(res.headers));
     res.setEncoding('utf8');
     console.log('BODY: ' + body);
+      originalRes.send(body);
     res.on('data', function (chunk) {
-      console.log('BODY: ' + chunk);
+      console.log(chunk);
     });
   });
 }
