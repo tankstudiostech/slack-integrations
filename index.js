@@ -13,7 +13,6 @@ app.listen(process.env.PORT || 5000);
 app.post('/techrefinvite', function (req, res) {
     res.header('Access-Control-Allow-Origin', req.headers.origin);
     InviteToSlack(techrefemail, req.body.email, techreftoken, res);
-  res.send("{ok:false}");
 });
 
 function InviteToSlack(url, email, token, originalRes) {
