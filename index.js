@@ -11,7 +11,7 @@ var techrefemail = 'techreformation.slack.com';
 var techreftoken = 'xoxp-6901139172-6902652471-10022340690-436360'
 app.listen(process.env.PORT || 5000);
 app.post('/techrefinvite', function (req, res) {
-    res.header('Access-Control-Allow-Origin', "http://slack.techreformation.com");
+    res.header('Access-Control-Allow-Origin', req.headers.origin);
     InviteToSlack(techrefemail, req.body.email, techreftoken, res);
   res.send("{ok:false}");
 });
