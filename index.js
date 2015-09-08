@@ -1,3 +1,10 @@
+var RUN_LUTHER = true;
+
+if(RUN_LUTHER)
+{
+    require('./lutherbot'); 
+}
+
 var express = require('express');
 var app = express();
 var request = require('request');
