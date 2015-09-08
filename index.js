@@ -14,14 +14,10 @@ app.listen(process.env.PORT || 5000);
 
 app.post('/techrefinvite', function (req, res) {
   res.header('Access-Control-Allow-Origin', req.headers.origin);
-
-  InviteToSlack(techrefurl, req.body.email, req.body.fname, req.body.lname, techreftoken, res, function (data, newRes) {
-    newRes.setEncoding('utf8');
-    newRes.send(data);
-  });
+  InviteToSlack(techrefurl, req.body.email, req.body.fname, req.body.lname, techreftoken, res);
 });
 
-function InviteToSlack(url, email, fname, lname, token, originalRes, callback) {
+function InviteToSlack(url, email, fname, lname, token, originalRes) {
   var options = {
     proxy: process.env.https_proxy,
     url: 'https://' + url + '/api/users.admin.invite?email=' + email + '&channels=C06SGVBV5&first_name=' + fname + 'n&last_name=' + lname + '&token=' + token + '&set_active=true&_attempts=1',
@@ -29,6 +25,6 @@ function InviteToSlack(url, email, fname, lname, token, originalRes, callback) {
   };
 
   request.post(options, function (err, res, body) {
-    callback(body, originalRes);
+    originalRes.send(body);
   });
 }
