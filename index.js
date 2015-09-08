@@ -2,7 +2,7 @@ var RUN_LUTHER = true;
 
 if(RUN_LUTHER)
 {
-    require('./lutherbot'); 
+    //require('./lutherbot'); 
 }
 
 var express = require('express');
