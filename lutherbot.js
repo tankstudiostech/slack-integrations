@@ -1,10 +1,12 @@
-(function () {
-  var Slack, autoMark, autoReconnect, slack, token, bibliaToken;
+this.Luther = function(conf) {
+  this.config = conf;
+  
+  this.run = function() {
+   var Slack, autoMark, autoReconnect, slack, token;
   var request = require('request');
   Slack = require('slack-client');
-
-  token = 'xoxb-8362496789-OAHaqA4kmJYy5SQv6Y1OrOEG';
-  bibliaToken = 'af3e9dd726db10140bb80cedd99863f8';
+  
+  token = this.config.lutherbotToken;
 
   autoReconnect = true;
 
@@ -114,5 +116,6 @@
     return console.error("Error: " + error);
   });
 
-  slack.login();
-})();
+  slack.login(); 
+  } 
+};

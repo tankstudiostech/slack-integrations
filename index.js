@@ -7,8 +7,22 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 }));
 
+var config;
+if((process.env.heroku || "false") === "true") {
+  config = process.env;
+} else {
+  var configurationFile = require('./config');
+  config = configurationFile.config;
+}
+
 var techrefurl = 'techreformation.slack.com';
-var techreftoken = 'xoxp-6901139172-6902652471-10022340690-436360'
+var techreftoken = config.slackToken;
+
+if(config.runLuther) {
+  var luther = require('./lutherbot');
+  var bot = new luther.Luther(config);
+  bot.run();
+}
 
 app.listen(process.env.PORT || 5000);
 
