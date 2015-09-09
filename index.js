@@ -8,7 +8,7 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
 }));
 
 var config;
-if((process.env.heroku || "false") === "true") {
+if((process.env.heroku || 'false') === 'true') {
   config = process.env;
 } else {
   var configurationFile = require('./config');
