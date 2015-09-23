@@ -34,7 +34,7 @@ app.post('/techrefinvite', function (req, res) {
 function InviteToSlack(url, email, fname, lname, token, originalRes) {
   var options = {
     proxy: process.env.https_proxy,
-    url: 'https://' + url + '/api/users.admin.invite?email=' + email + '&channels=C06SGVBV5&first_name=' + fname + 'n&last_name=' + lname + '&token=' + token + '&set_active=true&_attempts=1',
+    url: 'https://' + url + '/api/users.admin.invite?email=' + email + '&channels=C06SGVBV5&first_name=' + fname + '&last_name=' + lname + '&token=' + token + '&set_active=true&_attempts=1',
     method: 'POST',
   };
 
