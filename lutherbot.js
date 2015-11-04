@@ -91,17 +91,26 @@ this.Luther = function(conf) {
   
   var timeList = [{
     name: "rtankersley",
+    display: "Ryan",
     timezone: timeZones[0] 
   },{
     name: "benjaminjrobin",
+    display: "Ben",
     timezone: timeZones[0] 
   },{
     name: "themast",
+    display: "Derek",
     timezone: timeZones[1] 
   },{
     name: "craigelliss",
+    display: "Craig",
     timezone: timeZones[2] 
   }]
+  
+  slack.on('team_join', function(user) {
+    
+  });
+  
   slack.on('message', function (message) {
     try {
       var channel, channelError, channelName, errors, response, text, textError, ts, messageType, typeError, user, userName;
@@ -141,16 +150,16 @@ this.Luther = function(conf) {
                 var messageString = "";
                 for(var i = 0; i < timeList.length; i++) {
                   var t = timeList[i];
-                  hour =  hour - (userTime.houroffset - t.timezone.houroffset);
-                  minutes = minutes - (userTime.minoffset - t.timezone.minoffset);
-                  if(minutes === 60) {
-                    hour += 1;
-                    minutes = 0;
+                  var newHour =  hour - (userTime.houroffset - t.timezone.houroffset);
+                  var newMinutes = minutes - (userTime.minoffset - t.timezone.minoffset);
+                  if(newMinutes === 60) {
+                    newHour += 1;
+                    newMinutes = 0;
                   }
-                  if(hour > 25) hour -= 24;
-                  var hourString = hour.toString();
+                  if(newHour > 25) newHour -= 24;
+                  var hourString = newHour.toString();
                   while(hourString.length < 2) hourString = "0" + hourString;
-                  var minString = minutes.toString();
+                  var minString = newMinutes.toString();
                   while(minString.length < 2) minString = "0" + minString;
                   messageString += '*' + t.name + '* : ' + hourString + ':' + minString + '\n';
                 }
