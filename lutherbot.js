@@ -90,7 +90,7 @@ this.Luther = function(conf) {
   }];
   
   var timeList = [{
-    name: "craigelliss",
+    name: "rtankersley",
     display: "Ryan",
     timezone: timeZones[0] 
   },{
@@ -102,7 +102,7 @@ this.Luther = function(conf) {
     display: "Derek",
     timezone: timeZones[1] 
   },{
-    name: "rtankersley",
+    name: "craigelliss",
     display: "Craig",
     timezone: timeZones[2] 
   }]
