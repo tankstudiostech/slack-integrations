@@ -156,7 +156,7 @@ this.Luther = function(conf) {
                     newHour += 1;
                     newMinutes = 0;
                   }
-                  if(newMinutes < 30) {
+                  if(newMinutes < 0) {
                     newMinutes += 60;
                     newHour -= 1;
                   }
