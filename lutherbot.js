@@ -157,6 +157,7 @@ this.Luther = function(conf) {
                     newMinutes = 0;
                   }
                   if(newHour >= 24) newHour -= 24;
+                  if(newHour < 0) newHour += 24;
                   var hourString = newHour.toString();
                   while(hourString.length < 2) hourString = "0" + hourString;
                   var minString = newMinutes.toString();
