@@ -70,6 +70,38 @@ this.Luther = function(conf) {
     return messageType === 'message' && channel != null && text != null && (containsText(text, "luther") || containsText(text, "<@U08ANELP7>"));
   }
   
+  function isMessageTimeRequest(message) {
+    var timeIndex = containsText(message, "time");  
+    return timeIndex;
+  }
+  
+  var timeZones = [{
+    name: 'cdt',
+    houroffset: -6,
+    minoffset: 0
+  },{
+    name: 'pdt',
+    houroffset: -5,
+    minoffset: 0
+  },{
+    name: 'at',
+    houroffset: 9,
+    minoffset: 30
+  }];
+  
+  var timeList = [{
+    name: "rtankersley",
+    timezone: timeZones[0] 
+  },{
+    name: "benjaminjrobin",
+    timezone: timeZones[0] 
+  },{
+    name: "themast",
+    timezone: timeZones[1] 
+  },{
+    name: "craigelliss",
+    timezone: timeZones[2] 
+  }]
   slack.on('message', function (message) {
     try {
       var channel, channelError, channelName, errors, response, text, textError, ts, messageType, typeError, user, userName;
@@ -85,18 +117,65 @@ this.Luther = function(conf) {
       userName = (user != null ? user.name : void 0) != null ? "@" + user.name : "UNKNOWN_USER";
   
       if (isMessageToLuther(messageType, channel, text)) {
-        getVerse(text, function (data) {
-          try {
-            var verse = JSON.parse(data);
-            console.log(verse);
-            if(verse.ok) {
-              
-              channel.send("*" + verse.reference + "*\n>" + verse.text.replace(/\r\n/g, '\n\n>'));
+        if(isMessageTimeRequest(text)) {
+          var userTime = null;
+          for(var i = 0; i < timeList.length; i++)
+          {
+            if(timeList[i].name == user.name)
+            {
+              userTime = timeList[i].timezone;
+              break;
             }
-          } catch(err) {
-            console.log(err);
           }
-        });
+          
+          if(userTime == null)
+            timeList[0].timezone;
+            
+            var timeIndex = text.toUpperCase().indexOf("time".toUpperCase());
+            if(timeIndex + 9 < text.length)
+            {
+              timeIndex = timeIndex + 5;
+              var hour = Number(text[timeIndex] + text[timeIndex + 1]);
+              var minutes = Number(text[timeIndex + 3] + text[timeIndex + 4]);
+              if(!isNaN(hour) && !isNaN(minutes)) {
+                var messageString = "";
+                for(var i = 0; i < timeList.length; i++) {
+                  var t = timeList[i];
+                  hour =  hour - (userTime.houroffset - t.timezone.houroffset);
+                  minutes = minutes - (userTime.minoffset - t.timezone.minoffset);
+                  if(minutes === 60) {
+                    hour += 1;
+                    minutes = 0;
+                  }
+                  if(hour > 25) hour -= 24;
+                  var hourString = hour.toString();
+                  while(hourString.length < 2) hourString = "0" + hourString;
+                  var minString = minutes.toString();
+                  while(minString.length < 2) minString = "0" + minString;
+                  messageString += '*' + t.name + '* : ' + hourString + ':' + minString + '\n';
+                }
+                channel.send(messageString);
+              }
+            }
+            else {
+              console.log(timeIndex);
+              console.log(text);
+            }
+        }
+        else {
+          getVerse(text, function (data) {
+            try {
+              var verse = JSON.parse(data);
+              console.log(verse);
+              if(verse.ok) {
+                
+                channel.send("*" + verse.reference + "*\n>" + verse.text.replace(/\r\n/g, '\n\n>'));
+              }
+            } catch(err) {
+              console.log(err);
+            }
+          });
+        }
       }
       else {
         typeError = messageType !== 'message' ? "unexpected type " + messageType + "." : null;
