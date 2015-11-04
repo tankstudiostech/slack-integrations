@@ -156,6 +156,10 @@ this.Luther = function(conf) {
                     newHour += 1;
                     newMinutes = 0;
                   }
+                  if(newMinutes < 30) {
+                    newMinutes += 60;
+                    newHour -= 1;
+                  }
                   if(newHour >= 24) newHour -= 24;
                   if(newHour < 0) newHour += 24;
                   var hourString = newHour.toString();
