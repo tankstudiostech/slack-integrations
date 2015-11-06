@@ -71,8 +71,7 @@ this.Luther = function(conf) {
   }
   
   function isMessageTimeRequest(message) {
-    var timeIndex = containsText(message, "time");  
-    return timeIndex;
+    return containsText(message, "time") && containsText(message, ":");  
   }
   
   var timeZones = [{
@@ -107,6 +106,38 @@ this.Luther = function(conf) {
     timezone: timeZones[2] 
   }]
   
+  function getTime(text, colonIndex) {
+    var one = 0;
+    var two = 0;
+    var three = 0;
+    var four = 0;
+    if(colonIndex - 1 > 0)
+      two = text[colonIndex - 1];
+    if(colonIndex - 2 > 0)
+      one = text[colonIndex - 2];
+    if(colonIndex + 1 < text.length)
+      three = text[colonIndex + 1];
+    if(colonIndex + 2 < text.length)
+      four = text[colonIndex + 2];
+     
+    var hour = 0;
+    var min = 0;
+    if(!isNaN(Number(one)) && !isNaN(Number(two))) {
+      hour = Number(one + two);
+    }
+    else if(!isNaN(Number(two))) {
+      hour = Number(two);
+    } 
+    else
+      return null;
+     
+    if(!isNaN(Number(three)) && !isNaN(Number(four)))
+      min = Number(three + four);
+     else
+      return null;
+      
+      return {hour: hour, min: min};
+  }
   slack.on('team_join', function(user) {
     
   });
@@ -140,21 +171,42 @@ this.Luther = function(conf) {
           if(userTime == null)
             timeList[0].timezone;
             
-            var timeIndex = text.toUpperCase().indexOf("time".toUpperCase());
-            if(timeIndex + 9 < text.length)
+            var colonIndexes = [];
+            var newText = text;
+            var cIndex = 0;
+            var hasColon = false;
+            do {
+              cIndex = newText.indexOf(":");
+              hasColon = cIndex > -1;
+              if(hasColon)
+              {
+                colonIndexes.push(cIndex);
+                if(cindex + 1 < newText.length)
+                  newText = newText.subString(cIndex + 1);
+                 else
+                  hasColon = false;
+              }
+            } while(hasColon)
+            
+            var time = null;
+            for(var ci in colonIndexes) {
+              time = getTime(text, i);
+              if(time == null)
+                break;
+            }
+            if(time != null)
             {
-              timeIndex = timeIndex + 5;
-              var hour = Number(text[timeIndex] + text[timeIndex + 1]);
-              var minutes = Number(text[timeIndex + 3] + text[timeIndex + 4]);
+              var hour = time.hour;
+              var minutes = time.min;
               if(!isNaN(hour) && !isNaN(minutes)) {
                 var messageString = "";
                 for(var i = 0; i < timeList.length; i++) {
                   var t = timeList[i];
                   var newHour =  hour - (userTime.houroffset - t.timezone.houroffset);
                   var newMinutes = minutes - (userTime.minoffset - t.timezone.minoffset);
-                  if(newMinutes === 60) {
+                  if(newMinutes >= 60) {
                     newHour += 1;
-                    newMinutes = 0;
+                    newMinutes -= 60;
                   }
                   if(newMinutes < 0) {
                     newMinutes += 60;
