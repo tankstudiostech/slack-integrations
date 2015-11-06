@@ -84,7 +84,7 @@ this.Luther = function(conf) {
     minoffset: 0
   },{
     name: 'at',
-    houroffset: 9,
+    houroffset: 10,
     minoffset: 30
   }];
   
@@ -106,6 +106,17 @@ this.Luther = function(conf) {
     timezone: timeZones[2] 
   }]
   
+  function getIsMorning(charOne, charTwo, charThree) {
+    if(charOne === ' ') {
+     charOne = charTwo;
+     charTwo = charThree; 
+    }
+    
+    if(charOne != null && (charTwo === 'M' || charTwo == 'm') &&  (charOne === 'P' || charOne === 'p'))
+        return false;
+    
+    return true;
+  }
   function getTime(text, colonIndex) {
     var one = 0;
     var two = 0;
@@ -113,6 +124,7 @@ this.Luther = function(conf) {
     var four = 0;
     var five = null;
     var six = null;
+    var seven = null;
     
     if(colonIndex - 1 > 0)
       two = text[colonIndex - 1];
@@ -123,6 +135,11 @@ this.Luther = function(conf) {
     if(colonIndex + 2 < text.length)
       four = text[colonIndex + 2];
     
+    if(colonIndex + 5 < text.length) {
+      five = text[colonIndex + 3];
+      six = text[colonIndex + 4];
+      seven = text[colonIndex + 5];
+    }
     if(colonIndex + 4 < text.length) {
       five = text[colonIndex + 3];
       six = text[colonIndex + 4];
@@ -151,7 +168,7 @@ this.Luther = function(conf) {
       hour -= 12;
       isMorning = false;
     }
-    else if(five != null && (six === 'M' || six == 'm') &&  (five === 'P' || five === 'p')) {
+    else if(getIsMorning(five, six, seven)) {
         isMorning = false;
     }
     
@@ -267,7 +284,7 @@ this.Luther = function(conf) {
               }
             }
             else {
-                channel.send("Were you trying to ask me to help with timezones?  If so, *you didn't send me time!*  Feel free ask again.");
+                channel.send("Were you wanting help with timezones?  If so, *you didn't send me time!*  Feel free ask again.");
             }
         }
         else {
