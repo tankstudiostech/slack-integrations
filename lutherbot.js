@@ -107,6 +107,7 @@ this.Luther = function(conf) {
   }]
   
   function getIsMorning(charOne, charTwo, charThree) {
+    console.log("one: " + charOne + ". two: " + charTwo + ". three: " + charThree);
     if(charOne === ' ') {
      charOne = charTwo;
      charTwo = charThree; 
@@ -117,6 +118,7 @@ this.Luther = function(conf) {
     
     return true;
   }
+  
   function getTime(text, colonIndex) {
     var one = 0;
     var two = 0;
@@ -168,10 +170,11 @@ this.Luther = function(conf) {
       hour -= 12;
       isMorning = false;
     }
-    else if(getIsMorning(five, six, seven)) {
-        isMorning = false;
+    else {
+        isMorning = getIsMorning(five, six, seven);
     }
     
+    console.log("Is MOrning: " + isMorning);
     return {hour: hour, min: min, isMorning: isMorning};
   }
   slack.on('team_join', function(user) {
@@ -256,13 +259,17 @@ this.Luther = function(conf) {
                   }
                   var newIsMorning = isMorning;
                   
+                  console.log("Fresh: " + hour + ". new: " + newHour);
                   if(hour < newHour) {
+                      
                     for(var s = newHour; s > hour; s--) {
                       if(s % 12 == 0)
                         newIsMorning = !newIsMorning;
                     }
                   }
                   else if(hour > newHour) {
+                    if(hour == 0 || hour == 12)
+                      newIsMorning = !newIsMorning;
                     for(var s = newHour; s <hour; s++) {
                       if(s % 12 == 0)
                         newIsMorning = !newIsMorning;
