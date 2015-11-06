@@ -111,6 +111,9 @@ this.Luther = function(conf) {
     var two = 0;
     var three = 0;
     var four = 0;
+    var five = null;
+    var six = null;
+    
     if(colonIndex - 1 > 0)
       two = text[colonIndex - 1];
     if(colonIndex - 2 > 0)
@@ -119,24 +122,40 @@ this.Luther = function(conf) {
       three = text[colonIndex + 1];
     if(colonIndex + 2 < text.length)
       four = text[colonIndex + 2];
-     
+    
+    if(colonIndex + 4 < text.length) {
+      five = text[colonIndex + 3];
+      six = text[colonIndex + 4];
+    }
     var hour = 0;
     var min = 0;
-    if(!isNaN(Number(one)) && !isNaN(Number(two))) {
+    if(one != ' ' && two != ' ' && !isNaN(Number(one)) && !isNaN(Number(two))) {
       hour = Number(one + two);
     }
-    else if(!isNaN(Number(two))) {
+    else if(two != ' ' && !isNaN(Number(two))) {
       hour = Number(two);
     } 
     else
       return null;
      
-    if(!isNaN(Number(three)) && !isNaN(Number(four)))
+    if(three != ' ' && four != ' ' && !isNaN(Number(three)) && !isNaN(Number(four)))
       min = Number(three + four);
-     else
+    else
       return null;
-      
-      return {hour: hour, min: min};
+    
+    var isMorning = true;
+    
+    if(hour < 0 || hour > 24 || min < 0 || min > 59)
+      return null;
+    if(hour > 12) {
+      hour -= 12;
+      isMorning = false;
+    }
+    else if(five != null && (six === 'M' || six == 'm') &&  (five === 'P' || five === 'p')) {
+        isMorning = false;
+    }
+    
+    return {hour: hour, min: min, isMorning: isMorning};
   }
   slack.on('team_join', function(user) {
     
@@ -180,24 +199,30 @@ this.Luther = function(conf) {
               hasColon = cIndex > -1;
               if(hasColon)
               {
+                if(colonIndexes.length > 0) {
+                  cIndex += colonIndexes[colonIndexes.length - 1] + 1;
+                }
                 colonIndexes.push(cIndex);
-                if(cindex + 1 < newText.length)
-                  newText = newText.subString(cIndex + 1);
+                if(cIndex + 1 < newText.length)
+                  newText = newText.substring(cIndex + 1);
                  else
                   hasColon = false;
               }
             } while(hasColon)
             
             var time = null;
-            for(var ci in colonIndexes) {
-              time = getTime(text, i);
-              if(time == null)
+            for(var ci = 0; ci < colonIndexes.length; ci++) {
+              time = getTime(text, colonIndexes[ci]);
+              if(time != null)
                 break;
             }
             if(time != null)
             {
               var hour = time.hour;
               var minutes = time.min;
+              var isMorning = time.isMorning;
+              console.log(isMorning);
+              
               if(!isNaN(hour) && !isNaN(minutes)) {
                 var messageString = "";
                 for(var i = 0; i < timeList.length; i++) {
@@ -212,20 +237,37 @@ this.Luther = function(conf) {
                     newMinutes += 60;
                     newHour -= 1;
                   }
-                  if(newHour >= 24) newHour -= 24;
-                  if(newHour < 0) newHour += 24;
+                  var newIsMorning = isMorning;
+                  
+                  if(hour < newHour) {
+                    for(var s = newHour; s > hour; s--) {
+                      if(s % 12 == 0)
+                        newIsMorning = !newIsMorning;
+                    }
+                  }
+                  else if(hour > newHour) {
+                    for(var s = newHour; s <hour; s++) {
+                      if(s % 12 == 0)
+                        newIsMorning = !newIsMorning;
+                    }
+                  }
+                  while(newHour > 12) {
+                    newHour -= 12;
+                  }
+                  while(newHour < 1) {
+                   newHour += 12; 
+                  }
                   var hourString = newHour.toString();
                   while(hourString.length < 2) hourString = "0" + hourString;
                   var minString = newMinutes.toString();
                   while(minString.length < 2) minString = "0" + minString;
-                  messageString += '*' + t.display + '* : ' + hourString + ':' + minString + '\n';
+                  messageString += '*' + t.display + '* : ' + hourString + ':' + minString + ' ' + (newIsMorning ? 'AM' : 'PM') + '\n';
                 }
                 channel.send(messageString);
               }
             }
             else {
-              console.log(timeIndex);
-              console.log(text);
+                channel.send("Were you trying to ask me to help with timezones?  If so, *you didn't send me time!*  Feel free ask again.");
             }
         }
         else {
