@@ -44,8 +44,8 @@ module.exports = function(robot) {
         actual = actual.trim();
         var momentObj = moment(actual, ["h:mm A"])
         for(var i = 0; i < timeList.length; i++) {
-            //if(timeList[i] == msg.message.user.name) {
-            if(timeList[i].name == 'themast') {
+            if(timeList[i] == msg.message.user.name) {
+            //if(timeList[i].name == 'themast') {
                 momentObj.subtract(timeList[i].timezone.houroffset, 'hour');
                 momentObj.subtract(timeList[i].timezone.minoffset, 'minute');
             }
