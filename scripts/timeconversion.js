@@ -34,7 +34,7 @@ module.exports = function(robot) {
     
     var moment = require('moment');
     
-    robot.hear(/time.*([0-1])?[1-9]:[0-5][0-9]([PpAa][Mm])?/i, function(msg) {
+    robot.hear(/time.*([0-1])?[1-9]:[0-5][0-9][ *]?([PpAa][Mm])?/i, function(msg) {
         var splitMatch = msg.match[0].split(' ');
         var actual = '';
         for(var i = 1; i < splitMatch.length; i++) {

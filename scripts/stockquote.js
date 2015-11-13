@@ -4,6 +4,9 @@ module.exports = function(robot) {
     var moment = require('moment');
     var request = require('request');
 	
+    const OPEN_HOUR = 15; // time is in UTC
+    const CLOSE_HOUR = 21; // time is in UTC
+    
     var failMessages = [
         "SELL! SELL! SELL!",
         "I should have invested in emus."
