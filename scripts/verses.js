@@ -3,7 +3,7 @@ module.exports = function(robot) {
     var bibleBooks = [
         'genesis', 'exodus', 'leviticus', 'numbers', 'deuteronomy',
         'joshua', 'judges', 'ruth', '1 samuel', '2 samuel', '1 kings', '2 kings', '1 chronicles', '2 chronicles', 'ezra', 'nehemiah', 'esther',
-        'job', 'psalms', 'proverbs', 'ecclesiastes', 'song of solomon',
+        'job', 'psalms', 'psalm', 'proverbs', 'ecclesiastes', 'song of solomon',
         'isaiah', 'jeremiah', 'lamentations', 'ezekiel', 'daniel',
         'hosea', 'joel', 'amos', 'obadiah', 'jonah', 'micah', 'nahum', 'habakkuk', 'zephaniah', 'haggai', 'zechariah', 'malachi',
         'matthew', 'mark', 'luke', 'john',
