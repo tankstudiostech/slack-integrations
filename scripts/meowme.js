@@ -14,8 +14,9 @@
 
 module.exports = function(robot) {
     var request = require('request');
+    var parseString = require('xml2js').parseString;
     
-    var meowMeUrl = 'http://meowme.herokuapp.com/random';
+    var meowMeUrl = 'http://thecatapi.com/api/images/get?format=xml';
     var bombingVar = 'bombing';
     var getRandomCat = function(cb) {
         var reqOpts = {
@@ -25,7 +26,10 @@ module.exports = function(robot) {
         };
         
         request.get(reqOpts, function (err, res, body) {
-            cb(JSON.parse(body).cat);
+            parseString(body, function (err, result) {
+                if(!err)
+                    cb(result.response.data[0].images[0].image[0].url[0]);
+            });
         });
     };
     
