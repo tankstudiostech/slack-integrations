@@ -3,9 +3,14 @@ module.exports = function(robot) {
         msg.send('http://i1068.photobucket.com/albums/u458/Ryan_Tankersley/apostlepaul_zpsgdj6cijj.jpg');  
     });
     
-    robot.enter(function(res) {
-        if(res.envelope.room == 'general') {
-            res.send('Welcome!');
+    robot.enter(function(msg) {
+        if(msg.envelope.room == 'general') {
+            var name = msg.message.user.real_name;
+            var message = 'Welcome ' + name + '! We are glad to have you! ' +
+            'As you are getting acquainted with Slack, you will notice that you\'re in a few channels already, such as #general and #tech. ' +
+            'There are many other channels you can join based on what you are interested in, such as #reading  and #games!\n\n' +
+            'If you have any questions, ask @rtankersley. He\'ll be happy to help :).'
+            msg.send(message);
         }
     });
 }
