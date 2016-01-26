@@ -39,13 +39,13 @@ module.exports = function(robot) {
             var firstLetter = match.substring(0, 1).toUpperCase();
             var matchLocation = message.indexOf(match);
             var newMessage = message.substring(0, matchLocation) + firstLetter + message.substring(matchLocation+firstLetter.length);
-            console.log(newMessage);
             getVerse(newMessage, function(body) {
                 try {
-                    console.log(body);
                     var verse = JSON.parse(body);
-                    console.log(verse);
                     if(verse.ok) {
+                        if(verse.text.length > 250) {
+                            verse.text = verse.text.substring(0, 2000) + '...';
+                        }
                         msg.send("*" + verse.reference + "*\n>" + verse.text.replace(/\r\n/g, '\n\n>'));
                     }
                 } catch(err) {
