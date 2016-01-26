@@ -5,7 +5,7 @@ module.exports = function(robot) {
     
     robot.enter(function(msg) {
         if(msg.envelope.room == 'general') {
-            var name = msg.message.user.real_name;
+            var name = msg.message.user.name;
             var message = 'Welcome ' + name + '! We are glad to have you! ' +
             'As you are getting acquainted with Slack, you will notice that you\'re in a few channels already, such as #general and #tech. ' +
             'There are many other channels you can join based on what you are interested in, such as #reading  and #games!\n\n' +
