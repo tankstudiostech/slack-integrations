@@ -43,7 +43,7 @@ module.exports = function(robot) {
                 try {
                     var verse = JSON.parse(body);
                     if(verse.ok) {
-                        if(verse.text.length > 250) {
+                        if(verse.text.length > 2000) {
                             verse.text = verse.text.substring(0, 2000) + '...';
                         }
                         msg.send("*" + verse.reference + "*\n>" + verse.text.replace(/\r\n/g, '\n\n>'));
