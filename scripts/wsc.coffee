@@ -1002,8 +1002,10 @@ module.exports = (robot) ->
 
   robot.respond /wsc list/im, (msg) ->
     questions = wscQuestions().map((val, index) ->
+      question = "Q#{val.number} - #{val.question}"
+      response = bold(question, robot.adapterName)
       """
-      **Q#{val.number} - #{val.question}**
+      #{response}
       """
     )
 
@@ -1016,8 +1018,9 @@ module.exports = (robot) ->
   robot.respond /wsc q ([1-9]$|[1-9]\d$|10[0-7]$)/im, (msg) ->
     questions = wscQuestions()
     question = findByNumber(questions, msg.match[1])
+    question = bold(question.question, robot.adapterName)
 
-    msg.send "**#{question.question}**"
+    msg.send "#{question}"
 
   robot.respond /wsc a ([1-9]$|[1-9]\d$|10[0-7]$)/im, (msg) ->
     questions = wscQuestions()
@@ -1026,42 +1029,18 @@ module.exports = (robot) ->
     msg.send "#{question.answer}"
 
   robot.respond /wsc qa ([1-9]$|[1-9]\d$|10[0-7]$)/im, (msg) ->
-    questions = wscQuestions()
-    question = findByNumber(questions, msg.match[1])
-
-    msg.send """
-    **#{question.question}**
-
-    #{question.answer}
-    """
+    msg.send getQuestionAndAnswer(msg.match[1], robot.adapterName)
 
   robot.respond /wsc proof ([1-9]$|[1-9]\d$|10[0-7]$)/im, (msg) ->
-    questions = wscQuestions()
-    q = findByNumber(questions, msg.match[1])
-    proofs = q.proofTexts
-    proof = ""
-    
-    for own key, value of proofs
-      proof += """
-      **#{key}:**
-
-      """
-
-      texts = value.join "\n    "
-      texts = "    " + texts + "\n\n"
-
-      proof += texts
-
-    msg.send proof
+    msg.send getQuestionProofs(msg.match[1], robot.adapterName)
 
   robot.respond /wsc full ([1-9]$|[1-9]\d$|10[0-7]$)/im, (msg) ->
     number = msg.match[1]
-    qa = getQuestionAndAnswer(number)
-    proofs = getQuestionProofs(number)
+    qa = getQuestionAndAnswer(number, robot.adapterName)
+    proofs = getQuestionProofs(number, robot.adapterName)
 
     msg.send """
     #{qa}
-
     #{proofs}
     """
 
@@ -1073,31 +1052,32 @@ module.exports = (robot) ->
     proofs = getQuestionProofs(question.number)
 
     msg.send """
-    **#{question.number}.** #{qa}
-
+    #{bold(question.number, robot.adapterName)}. #{qa}
     #{proofs}
     """
 
-getQuestionAndAnswer = (number) ->
+getQuestionAndAnswer = (number, adapter) ->
   questions = wscQuestions()
   question = findByNumber(questions, number)
+  boldQuestion = bold(question.question, adapter)
 
   return """
-  **#{question.question}**
-
+  #{boldQuestion}
   #{question.answer}
   """
 
-getQuestionProofs = (number) ->
+getQuestionProofs = (number, adapter) ->
   questions = wscQuestions()
   q = findByNumber(questions, number)
   proofs = q.proofTexts
   proof = ""
   
   for own key, value of proofs
-    proof += """
-    **#{key}:**
+    key = "#{key}:"
+    proofNumber = bold(key, adapter)
 
+    proof += """
+    #{proofNumber}
     """
 
     texts = value.join "\n    "
@@ -1121,3 +1101,12 @@ findByNumber = (source, number) ->
   return source.filter((obj) ->
     return +obj.number == +number;
   )[0];
+
+bold = (text, adapter) ->
+  switch adapter
+    when "discord"
+      "**#{text}**"
+    when "slack"
+      "*#{text}*"
+    else
+      "#{text}"
