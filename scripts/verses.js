@@ -31,14 +31,14 @@ module.exports = function(robot) {
         });
     };
     
-    for(var i = 0; i < bibleBooks.length; i++) {
-        var regex = new RegExp(bibleBooks[i], 'i');
+    var verseRegexHear = function(regex) {
         robot.hear(regex, function(msg) {
             var message = msg.message.text;
             var match = msg.match[0];
             var firstLetter = match.substring(0, 1).toUpperCase();
             var matchLocation = message.indexOf(match);
-            var newMessage = message.substring(0, matchLocation) + firstLetter + message.substring(matchLocation+firstLetter.length);
+            //Capitalizes the first letter and cuts off any verse that might have been before this one.
+            var newMessage = firstLetter + message.substring(matchLocation+firstLetter.length);
             getVerse(newMessage, function(body) {
                 try {
                     var verse = JSON.parse(body);
@@ -53,5 +53,10 @@ module.exports = function(robot) {
                 }
             });
         });
+    };
+    
+    for(var i = 0; i < bibleBooks.length; i++) {
+        var regex = new RegExp('!' + bibleBooks[i], 'i');
+        verseRegexHear(regex);
     }
 }
